@@ -5,3 +5,4 @@ class Account:
         self.acc_password = acc_password
 
     # create method to send new account to SQLite database
+    # def add_to_db():
