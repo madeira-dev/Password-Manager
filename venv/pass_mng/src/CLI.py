@@ -22,6 +22,7 @@ def main():
             new_username = str(input("type the new username: "))
             new_password = str(input("type the new password: "))
             Account(new_id, new_username, new_password)
+            # verify if user is new, if it is, get back to this screen so user can login
 
         elif usr_inp == 2:
             print("-login selected-")
