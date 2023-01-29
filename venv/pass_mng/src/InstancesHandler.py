@@ -1,4 +1,5 @@
 import Instance as it
+import sqlite3
 
 
 class InstancesHandler():
@@ -7,19 +8,41 @@ class InstancesHandler():
         pass
 
     def list_instances():
-        print("-list instances selected-")
+        users_conn = sqlite3.connect('users.db')
+        users_db_cursor = users_conn.cursor()  # cursor to interact with users database
+
+        users_db_cursor.execute("SELECT * FROM users")
+        rows = users_db_cursor.fetchall()
+
+        for row in row:
+            print(row)
+
+        users_conn.close()
 
     def add_instance(service_id, service_name, service_username, service_password):
         new_instance = it.Instance(
             service_id, service_name, service_username, service_password)
-        print("\nservice id:", service_id, "\nservice name: ", new_instance.service_name, "\nusername: ", new_instance.service_username,
-              "\npassword: ", new_instance.service_password)
-        print("-add instance selected-")
-        # add to instances_arr
+        users_conn = sqlite3.connect('users.db')
+        users_db_cursor = users_conn.cursor()  # cursor to interact with users database
+
+        users_db_cursor.execute("INSERT INTO users VALUES(?, ?, ?, ?)",
+                                (service_id, service_name, service_username, service_password))
+        users_conn.close()
 
     def remove_instance(id):
-        print("instance id: ", id)
-        print("-remove instance selected-")
+        users_conn = sqlite3.connect('users.db')
+        users_db_cursor = users_conn.cursor()  # cursor to interact with users database
 
-    def modify_instance():
-        print("-modify instance selected-")
+        users_conn.close()
+
+    def modify_instance(username, password):
+        users_conn = sqlite3.connect('users.db')
+        users_db_cursor = users_conn.cursor()  # cursor to interact with users database
+
+        users_conn.close()
+
+    def search_instance(username, password):
+        users_conn = sqlite3.connect('users.db')
+        users_db_cursor = users_conn.cursor()  # cursor to interact with users database
+
+        users_conn.close()

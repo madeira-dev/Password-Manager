@@ -1,6 +1,7 @@
 from Account import *
 from Login import *
 from InstancesHandler import *
+import sqlite3
 
 
 def main():
@@ -16,21 +17,25 @@ def main():
         usr_inp = int(input("type the option number: "))
 
         if usr_inp == 1:
-            print("-create account selected-")
             new_id = 0  # tmp value. change to random value later
-            # call randomizing function
             new_username = str(input("type the new username: "))
             new_password = str(input("type the new password: "))
-            Account(new_id, new_username, new_password)
-            # verify if user is new, if it is, get back to this screen so user can login
+            new_account = Account(new_id, new_username, new_password)
+
+            if Login.check_existing_credentials(
+                    new_account.username, new_account.password):
+                print("user already exists")
 
         elif usr_inp == 2:
-            print("-login selected-")
             usr_id = 0
             usr_username = str(input("enter your username: "))
             usr_password = str(input("enter the password: "))
-            Login(usr_id, usr_username, usr_password)
-            # if successful login, call new menu with instances options
+            new_login = Login(usr_id, usr_username, usr_password)
+
+            if not(Login.check_correct_credentials(
+                    new_account.username, new_account.password)):
+                print("wrong credentials.")
+                return
 
             while instances_input != 5:
                 print("""
