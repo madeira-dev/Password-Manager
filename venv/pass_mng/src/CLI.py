@@ -1,12 +1,28 @@
+import sqlite3
 from Account import *
 from Login import *
 from InstancesHandler import *
-import sqlite3
+from random import *
+
+
+def check_tables():  # function to check if the table exists in the database
+    conn = sqlite3.connect('users.db')
+    conn_cur = conn.cursor()
+
+    listOfTables = conn_cur.execute(
+        """SELECT name FROM sqlite_master WHERE type='table' AND name='users_creds';""").fetchall()
+
+    if listOfTables == []:
+        conn_cur.execute(
+            "CREATE TABLE users_creds (id integer, username text, password text)")
+        conn.commit()
+        conn.close()
 
 
 def main():
     usr_inp = -1
     instances_input = -1
+    check_tables()
 
     while usr_inp != 0:
         print("""Choose the option:
@@ -17,14 +33,17 @@ def main():
         usr_inp = int(input("type the option number: "))
 
         if usr_inp == 1:
-            new_id = 0  # tmp value. change to random value later
+            new_id = randint(0, 100)
             new_username = str(input("type the new username: "))
             new_password = str(input("type the new password: "))
             new_account = Account(new_id, new_username, new_password)
+            res = Login(new_id, new_username, new_password)
 
-            if Login.check_existing_credentials(
-                    new_account.username, new_account.password):
+            if res.check_existing_credentials(new_account.username):
                 print("user already exists")
+            else:
+                Account.add_to_db(
+                    new_account.id, new_account.username, new_account.password)
 
         elif usr_inp == 2:
             usr_id = 0
@@ -32,7 +51,7 @@ def main():
             usr_password = str(input("enter the password: "))
             new_login = Login(usr_id, usr_username, usr_password)
 
-            if not(Login.check_correct_credentials(
+            if not(new_login.check_correct_credentials(
                     new_account.username, new_account.password)):
                 print("wrong credentials.")
                 return

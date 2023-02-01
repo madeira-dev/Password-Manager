@@ -12,13 +12,13 @@ class Account:
         users_db_cursor = users_conn.cursor()  # cursor to interact with users database
 
         users_db_cursor.execute(
-            "SELECT username, password FROM users WHERE username = ? and password = ?" (username, password))
+            "SELECT username, password FROM users WHERE username = ? and password = ?", (username, password))
 
     def add_to_db(id, username, password):
         users_conn = sqlite3.connect('users.db')
         users_db_cursor = users_conn.cursor()  # cursor to interact with users database
 
         users_db_cursor.execute(
-            "INSERT INTO users VALUES(?, ?, ?)", (id, username, password))
+            "INSERT INTO users_creds VALUES(?, ?, ?)", (id, username, password))
         users_conn.commit()
         users_conn.close()
