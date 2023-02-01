@@ -5,9 +5,28 @@ from InstancesHandler import *
 from random import *
 
 
+def start_connection():  # start connection with database
+    users_conn = sqlite3.connect('pass_mng.db')
+    users_db_cursor = users_conn.cursor()
+    users_db_cursor.execute("SELECT * FROM users_creds")
+    rows = users_db_cursor.fetchall()
+
+    # loading all rows into an array for faster queries
+    users_arr = []
+    for row in rows:
+        users_arr.append(row)
+
+    return users_conn, users_arr
+
+
+######################################
+# probably change these global variable later #
+user_db_conn, users_arr = start_connection()
+######################################
+
+
 def check_tables():  # function to check if the table exists in the database
-    conn = sqlite3.connect('pass_mng.db')  # main database
-    conn_cur = conn.cursor()
+    conn_cur = user_db_conn.cursor()
 
     check_users_table = conn_cur.execute(
         """SELECT name FROM sqlite_master WHERE type='table' AND name='users_creds';""").fetchall()  # checking for users credentials table
@@ -15,9 +34,7 @@ def check_tables():  # function to check if the table exists in the database
     if check_users_table == []:
         conn_cur.execute(
             "CREATE TABLE users_creds (id integer, username text, password text)")
-        conn.commit()
-    else:
-        pass
+        user_db_conn.commit()
 
     check_instances_table = conn_cur.execute(
         """SELECT name FROM sqlite_master WHERE type='table' AND name='instances';""").fetchall()  # checking for services instances table
@@ -25,11 +42,7 @@ def check_tables():  # function to check if the table exists in the database
     if check_instances_table == []:
         conn_cur.execute(
             "CREATE TABLE instances (id integer, service_name text, service_username text, service_password text)")
-        conn.commit()
-    else:
-        pass
-
-        conn.close()
+        user_db_conn.commit()
 
 
 def main():
@@ -49,8 +62,9 @@ def main():
             new_id = randint(0, 100)  # think of a better way to define the IDs
             new_username = str(input("type the new username: "))
             new_password = str(input("type the new password: "))
-            new_account = Account(new_id, new_username, new_password)
-            res = Login(new_id, new_username, new_password)
+            new_account = Account(
+                new_id, users_arr, new_username, new_password)
+            res = Login(new_id, users_arr, new_username, new_password)
 
             if res.check_existing_credentials(new_account.username):
                 print("user already exists")

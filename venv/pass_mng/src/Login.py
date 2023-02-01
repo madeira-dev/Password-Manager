@@ -1,26 +1,15 @@
 import sqlite3
+from CLI import *
 
 
 class Login:
-    def __init__(self, id, username, password) -> None:
+    def __init__(self, users_arr, id, username, password) -> None:
         self.id = id
+        self.users_arr = users_arr
         self.username = username
         self.password = password
 
-    def start_connection(self):
-        users_conn = sqlite3.connect('pass_mng.db')
-        users_db_cursor = users_conn.cursor()
-        users_db_cursor.execute("SELECT * FROM users_creds")
-        rows = users_db_cursor.fetchall()
-
-        # loading all rows into an array for faster queries
-        users_arr = []
-        for row in rows:
-            users_arr.append(row)
-
-        return users_conn, users_arr
-
-    def check_existing_credentials(self, username):
+    def check_existing_credentials(self, users_arr, username):
         conn, users_array = self.start_connection()
         flag = False
 
@@ -32,7 +21,7 @@ class Login:
 
         return flag
 
-    def check_correct_credentials(self, username, password):
+    def check_correct_credentials(self, users_arr, username, password):
         conn, users_arr = self.start_connection()
         main_flag = False
 
