@@ -8,14 +8,15 @@ class Account:
         self.password = password
 
     def check_new_credentials(username, password):
-        users_conn = sqlite3.connect('users.db')
+        users_conn = sqlite3.connect('pass_mng.db')
         users_db_cursor = users_conn.cursor()  # cursor to interact with users database
 
         users_db_cursor.execute(
             "SELECT username, password FROM users WHERE username = ? and password = ?", (username, password))
+        users_conn.close()
 
     def add_to_db(id, username, password):
-        users_conn = sqlite3.connect('users.db')
+        users_conn = sqlite3.connect('pass_mng.db')
         users_db_cursor = users_conn.cursor()  # cursor to interact with users database
 
         users_db_cursor.execute(

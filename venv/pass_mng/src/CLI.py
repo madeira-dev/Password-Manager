@@ -6,16 +6,29 @@ from random import *
 
 
 def check_tables():  # function to check if the table exists in the database
-    conn = sqlite3.connect('users.db')
+    conn = sqlite3.connect('pass_mng.db')  # main database
     conn_cur = conn.cursor()
 
-    listOfTables = conn_cur.execute(
-        """SELECT name FROM sqlite_master WHERE type='table' AND name='users_creds';""").fetchall()
+    check_users_table = conn_cur.execute(
+        """SELECT name FROM sqlite_master WHERE type='table' AND name='users_creds';""").fetchall()  # checking for users credentials table
 
-    if listOfTables == []:
+    if check_users_table == []:
         conn_cur.execute(
             "CREATE TABLE users_creds (id integer, username text, password text)")
         conn.commit()
+    else:
+        pass
+
+    check_instances_table = conn_cur.execute(
+        """SELECT name FROM sqlite_master WHERE type='table' AND name='instances';""").fetchall()  # checking for services instances table
+
+    if check_instances_table == []:
+        conn_cur.execute(
+            "CREATE TABLE instances (id integer, service_name text, service_username text, service_password text)")
+        conn.commit()
+    else:
+        pass
+
         conn.close()
 
 
@@ -33,7 +46,7 @@ def main():
         usr_inp = int(input("type the option number: "))
 
         if usr_inp == 1:
-            new_id = randint(0, 100)
+            new_id = randint(0, 100)  # think of a better way to define the IDs
             new_username = str(input("type the new username: "))
             new_password = str(input("type the new password: "))
             new_account = Account(new_id, new_username, new_password)

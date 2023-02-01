@@ -8,7 +8,7 @@ class Login:
         self.password = password
 
     def start_connection(self):
-        users_conn = sqlite3.connect('users.db')
+        users_conn = sqlite3.connect('pass_mng.db')
         users_db_cursor = users_conn.cursor()
         users_db_cursor.execute("SELECT * FROM users_creds")
         rows = users_db_cursor.fetchall()
