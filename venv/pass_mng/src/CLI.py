@@ -6,8 +6,8 @@ from random import *
 
 
 def start_connection():  # start connection with database
-    users_conn = sqlite3.connect('pass_mng.db')
-    users_db_cursor = users_conn.cursor()
+    db_conn = sqlite3.connect('pass_mng.db')
+    users_db_cursor = db_conn.cursor()
     users_db_cursor.execute("SELECT * FROM users_creds;")
     rows = users_db_cursor.fetchall()
 
@@ -16,12 +16,12 @@ def start_connection():  # start connection with database
     for row in rows:
         users_arr.append(row)
 
-    return users_conn, users_arr
+    return db_conn, users_arr
 
 
 ######################################
 # probably change these global variable later #
-user_db_conn, users_arr = start_connection()
+db_conn, users_arr = start_connection()
 ######################################
 
 
@@ -59,6 +59,18 @@ def terminate_program():
     return
 
 
+def load_instances_table():
+    instances_db_cursor = db_conn.cursor()
+    instances_db_cursor.execute("SELECT * FROM instances;")
+    rows = instances_db_cursor.fetchall()
+
+    instances_arr = []
+    for row in rows:
+        instances_arr.append(row)
+
+    return instances_arr
+
+
 def main():
     usr_inp = -1
     instances_input = -1
@@ -82,7 +94,7 @@ def main():
             new_account = Account(user_db_conn, users_arr,
                                   new_id,  new_username, new_password)  # creates new Account *object*
 
-            if not new_account.check_existing_credentials(user_db_conn, users_arr, new_account.username, new_account.password):
+            if not new_account.check_existing_credentials(users_arr, new_account.username, new_account.password):
                 new_account.add_to_db(
                     user_db_conn, users_arr, new_account.id, new_account.username, new_account.password)  # adds to the users_arr the tuple of the account object
             else:
@@ -94,9 +106,10 @@ def main():
             new_login = Login(user_db_conn, users_arr,
                               usr_username, usr_password)
 
-            if not (new_login.check_correct_credentials(user_db_conn, users_arr, new_login.username, new_login.password)):
+            if not (new_login.check_correct_credentials(users_arr, new_login.username, new_login.password)):
                 print("wrong credentials.")
                 return
+            print("Login Successful")
 
             while instances_input != 5:
                 print("""

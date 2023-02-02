@@ -1,4 +1,3 @@
-import sqlite3
 from CLI import *
 from Login import *
 
@@ -11,13 +10,11 @@ class Account:
         self.username = username
         self.password = password
 
-    def check_existing_credentials(self, connection, users_arr, username, password):
+    def check_existing_credentials(self, users_arr, username, password):
         flag = False
-
         for account in users_arr:
             if account[1] == username and account[2] == password:
                 flag = True
-
         return flag
 
     def add_to_db(self, connection, users_arr, id, username, password):
