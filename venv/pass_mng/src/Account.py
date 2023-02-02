@@ -1,27 +1,27 @@
 import sqlite3
 from CLI import *
+from Login import *
 
 
 class Account:
-    def __init__(self, users_arr, id, username, password) -> None:
-        self.id = id
+    def __init__(self, connection, users_arr, id, username, password) -> None:
+        self.connection = connection
         self.users_arr = users_arr
+        self.id = id
         self.username = username
         self.password = password
 
-    def check_new_credentials(self, users_arr, username, password):
-        users_conn = sqlite3.connect('pass_mng.db')
-        users_db_cursor = users_conn.cursor()  # cursor to interact with users database
+    def check_existing_credentials(self, connection, users_arr, username, password):
+        flag = False
 
-        users_db_cursor.execute(
-            "SELECT username, password FROM users WHERE username = ? and password = ?", (username, password))
-        users_conn.close()
+        for account in users_arr:
+            if account[1] == username and account[2] == password:
+                flag = True
 
-    def add_to_db(self, users_arr, id, username, password):
-        users_conn = sqlite3.connect('pass_mng.db')
-        users_db_cursor = users_conn.cursor()  # cursor to interact with users database
+        return flag
 
-        users_db_cursor.execute(
-            "INSERT INTO users_creds VALUES(?, ?, ?)", (id, username, password))
-        users_conn.commit()
-        users_conn.close()
+    def add_to_db(self, connection, users_arr, id, username, password):
+        new_account = Account(connection, users_arr, id, username, password)
+        new_account_tuple = (
+            new_account.id, new_account.username, new_account.password)
+        users_arr.append(new_account_tuple)

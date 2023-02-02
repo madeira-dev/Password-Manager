@@ -8,7 +8,7 @@ from random import *
 def start_connection():  # start connection with database
     users_conn = sqlite3.connect('pass_mng.db')
     users_db_cursor = users_conn.cursor()
-    users_db_cursor.execute("SELECT * FROM users_creds")
+    users_db_cursor.execute("SELECT * FROM users_creds;")
     rows = users_db_cursor.fetchall()
 
     # loading all rows into an array for faster queries
@@ -45,6 +45,20 @@ def check_tables():  # function to check if the table exists in the database
         user_db_conn.commit()
 
 
+def terminate_program():
+    conn_cur = user_db_conn.cursor()
+    conn_cur.execute("DELETE FROM users_creds;")
+    user_db_conn.commit()
+
+    for user in users_arr:
+        conn_cur.execute(
+            "INSERT INTO users_creds VALUES (?, ?, ?);", (user[0], user[1], user[2]))
+        user_db_conn.commit()
+    user_db_conn.close()
+
+    return
+
+
 def main():
     usr_inp = -1
     instances_input = -1
@@ -58,28 +72,29 @@ def main():
 
         usr_inp = int(input("type the option number: "))
 
-        if usr_inp == 1:
+        if usr_inp == 0:
+            terminate_program()
+
+        if usr_inp == 1:  # new account
             new_id = randint(0, 100)  # think of a better way to define the IDs
             new_username = str(input("type the new username: "))
             new_password = str(input("type the new password: "))
-            new_account = Account(
-                new_id, users_arr, new_username, new_password)
-            res = Login(new_id, users_arr, new_username, new_password)
+            new_account = Account(user_db_conn, users_arr,
+                                  new_id,  new_username, new_password)  # creates new Account *object*
 
-            if res.check_existing_credentials(new_account.username):
-                print("user already exists")
+            if not new_account.check_existing_credentials(user_db_conn, users_arr, new_account.username, new_account.password):
+                new_account.add_to_db(
+                    user_db_conn, users_arr, new_account.id, new_account.username, new_account.password)  # adds to the users_arr the tuple of the account object
             else:
-                Account.add_to_db(
-                    new_account.id, new_account.username, new_account.password)
+                print("user already exists")
 
-        elif usr_inp == 2:
-            usr_id = 0
-            usr_username = str(input("enter your username: "))
-            usr_password = str(input("enter the password: "))
-            new_login = Login(usr_id, usr_username, usr_password)
+        elif usr_inp == 2:  # login to existing account
+            usr_username = str(input("type the username: "))
+            usr_password = str(input("type the password: "))
+            new_login = Login(user_db_conn, users_arr,
+                              usr_username, usr_password)
 
-            if not(new_login.check_correct_credentials(
-                    new_account.username, new_account.password)):
+            if not (new_login.check_correct_credentials(user_db_conn, users_arr, new_login.username, new_login.password)):
                 print("wrong credentials.")
                 return
 

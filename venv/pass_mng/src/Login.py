@@ -3,32 +3,30 @@ from CLI import *
 
 
 class Login:
-    def __init__(self, users_arr, id, username, password) -> None:
-        self.id = id
+    def __init__(self, connection, users_arr, username, password) -> None:
+        self.connection = connection
         self.users_arr = users_arr
         self.username = username
         self.password = password
 
-    def check_existing_credentials(self, users_arr, username):
-        conn, users_array = self.start_connection()
+    def check_existing_credentials(self, connection, users_arr, username, password):
         flag = False
 
-        for account in users_array:
-            if account[1] == username:
+        for account in users_arr:
+            if account[1] == username and account[2] == password:
                 flag = True
-
-        conn.close()
 
         return flag
 
-    def check_correct_credentials(self, users_arr, username, password):
-        conn, users_arr = self.start_connection()
+    def check_correct_credentials(self, connection, users_arr, username, password):
         main_flag = False
 
         for account in users_arr:
             if account[1] == username and account[2] == password:
                 main_flag = True
 
-        conn.close()
-
         return main_flag
+
+    def add_to_db(self, connection, users_arr, id, username, password):
+        new_account = Login(connection, users_arr, id, username, password)
+        users_arr.append(new_account)
