@@ -26,7 +26,7 @@ db_conn, users_arr = start_connection()
 
 
 def check_tables():  # function to check if the table exists in the database
-    conn_cur = user_db_conn.cursor()
+    conn_cur = db_conn.cursor()
 
     check_users_table = conn_cur.execute(
         """SELECT name FROM sqlite_master WHERE type='table' AND name='users_creds';""").fetchall()  # checking for users credentials table
@@ -34,7 +34,7 @@ def check_tables():  # function to check if the table exists in the database
     if check_users_table == []:
         conn_cur.execute(
             "CREATE TABLE users_creds (id integer, username text, password text)")
-        user_db_conn.commit()
+        db_conn.commit()
 
     check_instances_table = conn_cur.execute(
         """SELECT name FROM sqlite_master WHERE type='table' AND name='instances';""").fetchall()  # checking for services instances table
@@ -42,19 +42,19 @@ def check_tables():  # function to check if the table exists in the database
     if check_instances_table == []:
         conn_cur.execute(
             "CREATE TABLE instances (id integer, service_name text, service_username text, service_password text)")
-        user_db_conn.commit()
+        db_conn.commit()
 
 
 def terminate_program():
-    conn_cur = user_db_conn.cursor()
+    conn_cur = db_conn.cursor()
     conn_cur.execute("DELETE FROM users_creds;")
-    user_db_conn.commit()
+    db_conn.commit()
 
     for user in users_arr:
         conn_cur.execute(
             "INSERT INTO users_creds VALUES (?, ?, ?);", (user[0], user[1], user[2]))
-        user_db_conn.commit()
-    user_db_conn.close()
+        db_conn.commit()
+    db_conn.close()
 
     return
 
@@ -91,19 +91,19 @@ def main():
             new_id = randint(0, 100)  # think of a better way to define the IDs
             new_username = str(input("type the new username: "))
             new_password = str(input("type the new password: "))
-            new_account = Account(user_db_conn, users_arr,
+            new_account = Account(db_conn, users_arr,
                                   new_id,  new_username, new_password)  # creates new Account *object*
 
             if not new_account.check_existing_credentials(users_arr, new_account.username, new_account.password):
                 new_account.add_to_db(
-                    user_db_conn, users_arr, new_account.id, new_account.username, new_account.password)  # adds to the users_arr the tuple of the account object
+                    db_conn, users_arr, new_account.id, new_account.username, new_account.password)  # adds to the users_arr the tuple of the account object
             else:
                 print("user already exists")
 
         elif usr_inp == 2:  # login to existing account
             usr_username = str(input("type the username: "))
             usr_password = str(input("type the password: "))
-            new_login = Login(user_db_conn, users_arr,
+            new_login = Login(db_conn, users_arr,
                               usr_username, usr_password)
 
             if not (new_login.check_correct_credentials(users_arr, new_login.username, new_login.password)):
