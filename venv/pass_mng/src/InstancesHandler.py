@@ -1,48 +1,63 @@
-import Instance as it
-import sqlite3
-
-
 class InstancesHandler():
-    def __init__(self, **kwargs) -> None:
-        instances_arr = kwargs.get("instances_arr", None)
-        pass
+    def __init__(self, instances_arr) -> None:
+        self.instances_arr = instances_arr
 
-    def list_instances():
-        users_conn = sqlite3.connect('users.db')
-        users_db_cursor = users_conn.cursor()  # cursor to interact with users database
+    def list_instances(instances_arr):
+        for instance in instances_arr:
+            print(instance)
 
-        users_db_cursor.execute("SELECT * FROM users")
-        rows = users_db_cursor.fetchall()
+    def add_instance(new_instance, instances_arr):
+        new_instance_tuple = (
+            new_instance.id, new_instance.service_name, new_instance.service_username, new_instance.service_password)
+        instances_arr.append(new_instance_tuple)
 
-        for row in row:
-            print(row)
+    def remove_instance(instance_id, instances_arr):
+        for instance in instances_arr:
+            if instance[0] == instance_id:
+                # try methods pop or remove
+                # instances_arr.remove(instance)
+                instances_arr.pop(instance)
 
-        users_conn.close()
+    def modify_instance(service_name, instances_arr):
+        for instance in instances_arr:
+            if instance[1] == service_name:
+                target_instance = instance
+                break
 
-    def add_instance(service_id, service_name, service_username, service_password):
-        new_instance = it.Instance(
-            service_id, service_name, service_username, service_password)
-        users_conn = sqlite3.connect('users.db')
-        users_db_cursor = users_conn.cursor()  # cursor to interact with users database
+        print("""type the number of the field you want to change:
+        1. service name
+        2. username
+        3. password""")
 
-        users_db_cursor.execute("INSERT INTO users VALUES(?, ?, ?, ?)",
-                                (service_id, service_name, service_username, service_password))
-        users_conn.close()
+        modification = int(input())
 
-    def remove_instance(id):
-        users_conn = sqlite3.connect('users.db')
-        users_db_cursor = users_conn.cursor()  # cursor to interact with users database
+        if modification == 1:
+            new_service_name = str(input("type the new service name: "))
+            target_instance[1] = new_service_name
+        elif modification == 2:
+            new_service_username = str(input("type the new username: "))
+            target_instance[1] = new_service_username
+        elif modification == 3:
+            new_service_password = str(input("type the new password: "))
+            target_instance[2] = new_service_password
+        else:
+            # make a proper error handling
+            print("invalid number")
+            return
 
-        users_conn.close()
+    def search_instance(instance_id, instances_arr):
+        for instance in instances_arr:
+            if instance[0] == instance_id:
+                searched_instance = instance
+                break
+        return searched_instance
 
-    def modify_instance(username, password):
-        users_conn = sqlite3.connect('users.db')
-        users_db_cursor = users_conn.cursor()  # cursor to interact with users database
+    def update_db(connection, instances_arr):
+        conn_cur = connection.cursor()
+        conn_cur.execute("DELETE FROM instances;")
+        connection.commit()
 
-        users_conn.close()
-
-    def search_instance(username, password):
-        users_conn = sqlite3.connect('users.db')
-        users_db_cursor = users_conn.cursor()  # cursor to interact with users database
-
-        users_conn.close()
+        for instance in instances_arr:
+            conn_cur.execute("INSERT INTO instances VALUES (?, ?, ?, ?)",
+                             (instance[0], instance[1], instance[2], instance[3]))
+            connection.commit()

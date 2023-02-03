@@ -2,6 +2,7 @@ import sqlite3
 from Account import *
 from Login import *
 from InstancesHandler import *
+from Instance import *
 from random import *
 
 
@@ -20,7 +21,7 @@ def start_connection():  # start connection with database
 
 
 ######################################
-# probably change these global variable later #
+# probably change these global variable later
 db_conn, users_arr = start_connection()
 ######################################
 
@@ -110,6 +111,7 @@ def main():
                 print("wrong credentials.")
                 return
             print("Login Successful")
+            instances_arr = load_instances_table()
 
             while instances_input != 5:
                 print("""
@@ -122,32 +124,38 @@ Choose the option:
 
                 instances_input = int(input("type the option number: "))
 
-                if instances_input == 1:
-                    InstancesHandler.list_instances()
+                if instances_input == 1:  # list instances
+                    InstancesHandler.list_instances(instances_arr)
 
-                elif instances_input == 2:
-                    new_service_id = int(
-                        input("type the new service id: "))
+                elif instances_input == 2:  # add instance
+                    # change this random value later to something with an actual pattern
+                    new_service_id = randint(0, 100)
+
                     new_service_name = str(
                         input("type new service name: "))
                     new_service_username = str(
                         input("type new service username: "))
                     new_service_password = str(
                         input("type new service password: "))
-
-                    InstancesHandler.add_instance(
+                    new_service_instance = Instance(
                         new_service_id, new_service_name, new_service_username, new_service_password)
 
-                elif instances_input == 3:
+                    InstancesHandler.add_instance(
+                        new_service_instance, instances_arr)
+
+                elif instances_input == 3:  # remove instance
                     service_id = int(
                         input("type the id of the service you want to remove: "))
 
-                    InstancesHandler.remove_instance(service_id)
+                    InstancesHandler.remove_instance(service_id, instances_arr)
 
-                elif instances_input == 4:
-                    InstancesHandler.modify_instance()
+                elif instances_input == 4:  # modify instance
+                    instance_to_modify = str(
+                        input("type the service name to change the informations: "))
+                    InstancesHandler.modify_instance(instance_to_modify)
 
-                elif instances_input == 5:
+                elif instances_input == 5:  # write instances array to DB and exit
+                    InstancesHandler.update_db(db_conn, instances_arr)
                     break
 
 
