@@ -14,32 +14,42 @@ class InstancesHandler():
     def remove_instance(instance_id, instances_arr):
         for instance in instances_arr:
             if instance[0] == instance_id:
-                # try methods pop or remove
-                # instances_arr.remove(instance)
-                instances_arr.pop(instance)
+                instances_arr.remove(instance)
 
     def modify_instance(service_name, instances_arr):
         for instance in instances_arr:
             if instance[1] == service_name:
                 target_instance = instance
+                print("target: ", target_instance)
                 break
 
-        print("""type the number of the field you want to change:
+        print("""which field you want to change?
         1. service name
         2. username
         3. password""")
 
-        modification = int(input())
+        modification = int(input("type the option number: "))
 
         if modification == 1:
             new_service_name = str(input("type the new service name: "))
-            target_instance[1] = new_service_name
+            tmp_target = list(target_instance)
+            tmp_target[1] = new_service_name
+            print("tmp_target: ", tmp_target)
+            target_instance = tuple(tmp_target)
+            print("target updated: ", target_instance)
+
         elif modification == 2:
             new_service_username = str(input("type the new username: "))
-            target_instance[1] = new_service_username
+            tmp_target = list(target_instance)
+            tmp_target[2] = new_service_username
+            target_instance = tuple(tmp_target)
+
         elif modification == 3:
             new_service_password = str(input("type the new password: "))
-            target_instance[2] = new_service_password
+            tmp_target = list(target_instance)
+            tmp_target[3] = new_service_password
+            target_instance = tuple(tmp_target)
+
         else:
             # make a proper error handling
             print("invalid number")
