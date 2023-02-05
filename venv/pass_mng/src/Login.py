@@ -1,4 +1,4 @@
-from CLI import *
+from main import *
 
 
 class Login:
@@ -13,4 +13,4 @@ class Login:
         for account in users_arr:
             if account[1] == username and account[2] == password:
                 flag = True
-        return flag
+        return account[0], flag
