@@ -1,6 +1,3 @@
-from Login import *
-
-
 class Account:
     def __init__(self, connection, users_arr, id, username, password) -> None:
         self.connection = connection
