@@ -75,19 +75,18 @@ def terminate_program(db_conn, users_arr):
 
 
 def main():
+    ''' initialization '''
     usr_inp = ""
-    instances_input = -1
     db_conn = start_connection()
     check_tables(db_conn)
     users_arr = load_users_creds_table(db_conn)
     print("Welcome to MemePass Password Manager.\n'quit' to leave.")
 
+    ''' main loop'''
     while usr_inp != "quit":
         usr_inp = str(input(">"))
 
-        if usr_inp == "quit":
-            terminate_program(db_conn, users_arr)
-
+        # initial menu commands
         if usr_inp == "CREATE ACCOUNT":  # new account
             new_id = randint(0, 100)  # think of a better way to define the IDs
             new_username = str(input("username:"))
@@ -99,6 +98,7 @@ def main():
                 new_account.add_to_db(
                     db_conn, users_arr, new_account.id, new_account.username, new_account.password)  # adds to the
                 # users_arr the tuple of the account object
+                print("Account created. with username:", new_username)
             else:
                 print("user already exists")
 
@@ -116,54 +116,47 @@ def main():
             print("Login Successful")
             instances_arr = load_instances_table(db_conn)
 
-            while instances_input != 5:
-                print("""
-Choose the option:
-        1. List services accounts
-        2. Add new service account
-        3. Remove service account
-        4. Modify service account
-        5. Exit""")
+        elif usr_inp == "quit":
+            terminate_program(db_conn, users_arr)
 
-                instances_input = int(input("type the option number: "))
+        # DB commands
+        elif usr_inp == "LIST":  # list instances
+            InstancesHandler.InstancesHandler.list_instances(
+                instances_arr, new_login.id)
 
-                if instances_input == 1:  # list instances
-                    InstancesHandler.InstancesHandler.list_instances(
-                        instances_arr, new_login.id)
+        elif usr_inp == "ADD":  # add instance
+            # change this random value later to something with an actual pattern
+            new_service_id = randint(0, 100)
 
-                elif instances_input == 2:  # add instance
-                    # change this random value later to something with an actual pattern
-                    new_service_id = randint(0, 100)
+            new_service_name = str(
+                input("type new service name: "))
+            new_service_username = str(
+                input("type new service username: "))
+            new_service_password = str(
+                input("type new service password: "))
+            new_service_instance = Instance.Instace(
+                new_login.id, new_service_id, new_service_name, new_service_username, new_service_password)
 
-                    new_service_name = str(
-                        input("type new service name: "))
-                    new_service_username = str(
-                        input("type new service username: "))
-                    new_service_password = str(
-                        input("type new service password: "))
-                    new_service_instance = Instance.Instace(
-                        new_login.id, new_service_id, new_service_name, new_service_username, new_service_password)
+            InstancesHandler.InstancesHandler.add_instance(
+                new_service_instance, instances_arr)
 
-                    InstancesHandler.InstancesHandler.add_instance(
-                        new_service_instance, instances_arr)
+        elif usr_inp == "DELETE":  # remove instance
+            service_id = int(
+                input("type the id of the service you want to remove: "))
 
-                elif instances_input == 3:  # remove instance
-                    service_id = int(
-                        input("type the id of the service you want to remove: "))
+            InstancesHandler.InstancesHandler.remove_instance(
+                service_id, instances_arr, new_login.id)
 
-                    InstancesHandler.InstancesHandler.remove_instance(
-                        service_id, instances_arr, new_login.id)
+        elif usr_inp == "MODIFY":  # modify instance
+            instance_to_modify = str(
+                input("type the service name to change the informations: "))
+            InstancesHandler.InstancesHandler.modify_instance(
+                instance_to_modify, instances_arr, new_login.id)
 
-                elif instances_input == 4:  # modify instance
-                    instance_to_modify = str(
-                        input("type the service name to change the informations: "))
-                    InstancesHandler.InstancesHandler.modify_instance(
-                        instance_to_modify, instances_arr, new_login.id)
-
-                elif instances_input == 5:  # write instances array to DB and exit
-                    InstancesHandler.InstancesHandler.update_db(
-                        db_conn, instances_arr)
-                    break
+        elif usr_inp == "SAVE":  # write instances array to DB and exit
+            InstancesHandler.InstancesHandler.update_db(
+                db_conn, instances_arr)
+            break
 
 
 if __name__ == "__main__":
