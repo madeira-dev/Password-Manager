@@ -6,11 +6,14 @@ class InstancesHandler():
         print("#########################")
         for instance in instances_arr:
             if owner_id == instance[0]:
-                print("#owner id:", instance[0])
-                print("#service id:", instance[1])
-                print("#service name:", instance[2])
-                print("#username:", instance[3])
-                print("#password:", instance[4])
+                print("#")
+                print("# owner id:", instance[0])
+                print("# service id:", instance[1])
+                print("# service name:", instance[2])
+                print("# username:", instance[3])
+                print("# password:", instance[4])
+                print("#")
+                print("#########################")
 
     def add_instance(new_instance, instances_arr):
         new_instance_tuple = (
@@ -22,39 +25,46 @@ class InstancesHandler():
             if instance[1] == instance_id and owner_id == instance[0]:
                 instances_arr.remove(instance)
 
-    def modify_instance(service_name, instances_arr, owner_id):
+    def modify_instance(service_id, instances_arr, owner_id):
         for instance in instances_arr:
-            if instance[2] == service_name and owner_id == instance[0]:
+            if instance[1] == service_id and owner_id == instance[0]:
                 target_instance = instance
                 print("target: ", target_instance)
                 break
 
-        print("""which field you want to change?
+        print("""
         1. service name
         2. username
         3. password""")
 
-        modification = int(input("type the option number: "))
+        modification = int(input("type the option number to change: "))
 
         if modification == 1:
             new_service_name = str(input("type the new service name: "))
-            tmp_target = list(target_instance)
-            tmp_target[1] = new_service_name
-            print("tmp_target: ", tmp_target)
-            target_instance = tuple(tmp_target)
-            print("target updated: ", target_instance)
+            for index, instance in enumerate(instances_arr):
+                instance_list = list(instance)
+                if instance_list[1] == service_id:
+                    instance_list[2] = new_service_name
+                instance = tuple(instance_list)
+                instances_arr[index] = instance
 
         elif modification == 2:
             new_service_username = str(input("type the new username: "))
-            tmp_target = list(target_instance)
-            tmp_target[2] = new_service_username
-            target_instance = tuple(tmp_target)
+            for index, instance in enumerate(instances_arr):
+                instance_list = list(instance)
+                if instance_list[1] == service_id:
+                    instance_list[3] = new_service_username
+                instance = tuple(instance_list)
+                instances_arr[index] = instance
 
         elif modification == 3:
             new_service_password = str(input("type the new password: "))
-            tmp_target = list(target_instance)
-            tmp_target[3] = new_service_password
-            target_instance = tuple(tmp_target)
+            for index, instance in enumerate(instances_arr):
+                instance_list = list(instance)
+                if instance_list[1] == service_id:
+                    instance_list[4] = new_service_password
+                instance = tuple(instance_list)
+                instances_arr[index] = instance
 
         else:
             # make a proper error handling
