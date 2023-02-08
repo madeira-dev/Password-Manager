@@ -80,85 +80,39 @@ def main():
     db_conn = start_connection()
     check_tables(db_conn)
     users_arr = load_users_creds_table(db_conn)
-    print("Welcome to MemePass Password Manager.\n'quit' to leave.")
+    print("Welcome to MadPass.\n'quit' to leave.")
 
     ''' main loop'''
     while usr_inp != "quit":
         usr_inp = str(input(">"))
 
         if usr_inp == "create account":
-            new_id = randint(0, 100)  # think of a better way to define the IDs
-            new_username = str(input("username:"))
-            new_password = str(input("password:"))
-            new_account = Account.Account(db_conn, users_arr,
-                                          new_id,  new_username, new_password)  # creates new Account *object*
-
-            if not new_account.check_existing_credentials(users_arr, new_account.username, new_account.password):
-                new_account.add_to_db(
-                    db_conn, users_arr, new_account.id, new_account.username, new_account.password)  # adds to the
-                # users_arr the tuple of the account object
-                print("Account created. with username:", new_username)
-            else:
-                print("user already exists")
+            CLI.create_account(db_conn, users_arr)
 
         elif usr_inp == "login":
-            usr_username = str(input("username:"))
-            usr_password = str(input("password:"))
-            new_login = Login.Login(db_conn, users_arr,
-                                    usr_username, usr_password)
-            new_login, new_login_flag = new_login.check_correct_credentials(
-                users_arr, usr_username, usr_password)
-
-            if not new_login_flag:
-                print("wrong credentials.")
-                return
-            print("Login Successful")
-            instances_arr = load_instances_table(db_conn)
+            instances_arr, new_login = CLI.login(db_conn, users_arr)
 
         elif usr_inp == "quit":
-            InstancesHandler.InstancesHandler.update_db(
-                db_conn, instances_arr)
-            terminate_program(db_conn, users_arr)
+            CLI.quit(db_conn, users_arr, instances_arr)
 
         elif usr_inp == "list":  # list instances
-            InstancesHandler.InstancesHandler.list_instances(
-                instances_arr, new_login.id)
+            CLI.list(new_login, instances_arr)
 
         elif usr_inp == "add":  # add instance
-            # change this random value later to something with an actual pattern
-            new_service_id = randint(0, 100)
-
-            new_service_name = str(
-                input("type new service name: "))
-            new_service_username = str(
-                input("type new service username: "))
-            new_service_password = str(
-                input("type new service password: "))
-            new_service_instance = it.Instance(
-                new_login.id, new_service_id, new_service_name, new_service_username, new_service_password)
-
-            InstancesHandler.InstancesHandler.add_instance(
-                new_service_instance, instances_arr)
+            CLI.add(new_login, instances_arr)
 
         elif usr_inp == "delete":  # remove instance
-            service_id = int(
-                input("type the service id:"))
-            InstancesHandler.InstancesHandler.remove_instance(
-                service_id, instances_arr, new_login.id)
+            CLI.delete(new_login, instances_arr)
 
         elif usr_inp == "modify":  # modify instance
-            instance_id = int(input("type the service id:"))
-            InstancesHandler.InstancesHandler.modify_instance(
-                instance_id, instances_arr, new_login.id)
+            CLI.modify(new_login, instances_arr)
 
         elif usr_inp == "save":  # write instances array to DB and exit
-            InstancesHandler.InstancesHandler.update_db(
-                db_conn, instances_arr)
-            terminate_program(db_conn, users_arr)
+            CLI.save(db_conn, instances_arr, users_arr)
             break
 
         else:
-            print(">unknown command<")
+            CLI.unknown()
 
 
 if __name__ == "__main__":
