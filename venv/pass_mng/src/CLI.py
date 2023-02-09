@@ -5,6 +5,9 @@ import Instance as it
 from random import randint
 import Account
 import bcrypt
+from Crypto.Cipher import AES
+from Crypto.Random import get_random_bytes
+import hashlib
 
 
 def user():
@@ -25,7 +28,7 @@ def commands():
 def create_account(connection, users_arr):
     new_id = randint(0, 100)  # think of a better way to define the IDs
     new_username = str(input("username:"))
-    new_password = str(input("password:"))
+    new_password = str(input("user's master password:"))
     new_account = Account.Account(connection, users_arr,
                                   new_id,  new_username, new_password)  # creates new Account *object*
 
@@ -40,7 +43,8 @@ def create_account(connection, users_arr):
 
 def login(connection, users_arr):
     usr_username = str(input("username:"))
-    usr_password = str(input("password:"))
+    print(usr_username, "'s", "master password:")
+    usr_password = str(input(""))
     new_login = Login.Login(connection, users_arr,
                             usr_username, usr_password)
     new_login, new_login_flag = new_login.check_correct_credentials(
@@ -48,7 +52,7 @@ def login(connection, users_arr):
 
     if not new_login_flag:
         print("wrong credentials.")
-        return
+        exit()
 
     print("Login Successful")
     instances_arr = main.load_instances_table(connection)
@@ -104,6 +108,14 @@ def save(connection, instances_arr, users_arr):
 
 def unknown():
     print("<unknown command>")
+
+
+def encrypt_database():
+    pass
+
+
+def decrypt_database():
+    pass
 
 
 def hash_password(password: str):
