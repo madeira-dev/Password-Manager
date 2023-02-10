@@ -1,5 +1,4 @@
 import Login
-import main
 import InstancesHandler
 import Instance as it
 from random import randint
@@ -8,21 +7,20 @@ import bcrypt
 from Crypto.Cipher import AES
 from Crypto.Random import get_random_bytes
 import hashlib
+import DatabaseManip
 
 
-def user():
-    # print to the terminal the user being used
-    pass
+def user(username):
+    print(username)
 
 
 def help():
-    # supposed to be used along with a <command> as argumentto check how to use it
-    pass
+    print("to use help, type help <command> to understand how to use the <command>")
 
 
 def commands():
-    # print available commands
-    pass
+    print("list  add  delete  modify  save")
+    print("type 'help <command>' and check how to use it")
 
 
 def create_account(connection, users_arr):
@@ -41,8 +39,7 @@ def create_account(connection, users_arr):
         print("user already exists")
 
 
-def login(connection, users_arr):
-    usr_username = str(input("username:"))
+def login(connection, users_arr, usr_username):
     print(usr_username, "'s", "master password:")
     usr_password = str(input(""))
     new_login = Login.Login(connection, users_arr,
@@ -55,14 +52,14 @@ def login(connection, users_arr):
         exit()
 
     print("Login Successful")
-    instances_arr = main.load_instances_table(connection)
+    instances_arr = DatabaseManip.load_instances_table(connection)
     return instances_arr, new_login
 
 
 def quit(connection, users_arr, instances_arr):
     InstancesHandler.InstancesHandler.update_db(
         connection, instances_arr)
-    main.terminate_program(connection, users_arr)
+    DatabaseManip.terminate_program(connection, users_arr)
 
 
 def list(new_login, instances_arr):
@@ -87,15 +84,12 @@ def add(new_login, instances_arr):
         new_service_instance, instances_arr)
 
 
-def delete(new_login, instances_arr):
-    service_id = int(
-        input("type the service id:"))
+def delete(new_login, instances_arr, service_id):
     InstancesHandler.InstancesHandler.remove_instance(
         service_id, instances_arr, new_login.id)
 
 
-def modify(new_login, instances_arr):
-    instance_id = int(input("type the service id:"))
+def modify(new_login, instances_arr, instance_id):
     InstancesHandler.InstancesHandler.modify_instance(
         instance_id, instances_arr, new_login.id)
 
@@ -103,11 +97,11 @@ def modify(new_login, instances_arr):
 def save(connection, instances_arr, users_arr):
     InstancesHandler.InstancesHandler.update_db(
         connection, instances_arr)
-    main.terminate_program(connection, users_arr)
+    DatabaseManip.terminate_program(connection, users_arr)
 
 
 def unknown():
-    print("<unknown command>")
+    print("unknown command. Maybe use 'help <command> and check how to use it.")
 
 
 def encrypt_database():

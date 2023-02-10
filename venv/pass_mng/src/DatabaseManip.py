@@ -63,4 +63,4 @@ def terminate_program(db_conn, users_arr):
         db_conn.commit()
     db_conn.close()
 
-    return
+    print("Goodbye!!")

@@ -3,9 +3,10 @@ class InstancesHandler():
         self.instances_arr = instances_arr
 
     def list_instances(instances_arr, owner_id):
-        print("#########################")
+        print("")
         for instance in instances_arr:
             if owner_id == instance[0]:
+                print("#########################")
                 print("#")
                 print("# owner id:", instance[0])
                 print("# service id:", instance[1])
@@ -13,17 +14,20 @@ class InstancesHandler():
                 print("# username:", instance[3])
                 print("# password:", instance[4])
                 print("#")
-                print("#########################")
+                print("#########################\n")
 
     def add_instance(new_instance, instances_arr):
         new_instance_tuple = (
             new_instance.owner_id, new_instance.service_id, new_instance.service_name, new_instance.service_username, new_instance.service_password)
         instances_arr.append(new_instance_tuple)
+        print(f"\n->new instance for {new_instance.service_name} added<-")
 
     def remove_instance(instance_id, instances_arr, owner_id):
         for instance in instances_arr:
-            if instance[1] == instance_id and owner_id == instance[0]:
+            if str(instance[0]) == str(owner_id) and str(instance_id) == str(instance[1]):
+                print("inside if")
                 instances_arr.remove(instance)
+                print(f"->{instance[2]} instance removed<-")
 
     def modify_instance(service_id, instances_arr, owner_id):
         for instance in instances_arr:
