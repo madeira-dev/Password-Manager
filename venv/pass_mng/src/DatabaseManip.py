@@ -1,8 +1,19 @@
 import sqlite3
+import getpass
+from pathlib import Path
 
 
 def start_connection():  # start connection with database
-    return sqlite3.connect('pass_mng.db')
+
+    # get unix/windows username
+    user = getpass.getuser()
+
+    # create database file
+    path = ('/home/' + str(user) + '/pass_mng.db')
+    Path(path).touch()
+
+    # connect and return connection to database
+    return sqlite3.connect(path)
 
 
 def check_tables(db_conn):  # check for users_creds and instances tables

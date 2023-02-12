@@ -1,17 +1,18 @@
 import Login
 import InstancesHandler
 import Instance as it
-from random import randint
 import Account
+import DatabaseManip
 import bcrypt
+import getpass
+import hashlib
+from random import randint
 from Crypto.Cipher import AES
 from Crypto.Random import get_random_bytes
-import hashlib
-import DatabaseManip
 
 
 def user(username):
-    print(username)
+    return username
 
 
 def help():
@@ -26,39 +27,36 @@ def commands():
 def create_account(connection, users_arr):
     new_id = randint(0, 100)  # think of a better way to define the IDs
     new_username = str(input("username:"))
-    new_password = str(input("user's master password:"))
+    new_password = str(getpass.getpass(new_username + "'s master password:"))
     new_account = Account.Account(connection, users_arr,
                                   new_id,  new_username, new_password)  # creates new Account *object*
 
     if not new_account.check_existing_credentials(users_arr, new_account.username, new_account.password):
         new_account.add_to_db(connection, users_arr, new_account.id,
                               new_account.username, new_account.password)  # adds to the
+
         # users_arr the tuple of the account object
-        print("Account created. with username:", new_username)
+        print("Account created with username:", new_username)
     else:
         print("user already exists")
 
 
 def login(connection, users_arr, usr_username):
-    print(usr_username, "'s", "master password:")
-    usr_password = str(input(""))
+    usr_password = str(getpass.getpass(usr_username + "'s master password:"))
+
     new_login = Login.Login(connection, users_arr,
                             usr_username, usr_password)
-    new_login, new_login_flag = new_login.check_correct_credentials(
+
+    tmp, new_login_flag = new_login.check_correct_credentials(
         users_arr, usr_username, usr_password)
 
-    if not new_login_flag:
-        print("wrong credentials.")
-        exit()
-
-    print("Login Successful")
-    instances_arr = DatabaseManip.load_instances_table(connection)
-    return instances_arr, new_login
+    return new_login, new_login_flag
 
 
 def quit(connection, users_arr, instances_arr):
     InstancesHandler.InstancesHandler.update_db(
         connection, instances_arr)
+
     DatabaseManip.terminate_program(connection, users_arr)
 
 
@@ -97,11 +95,12 @@ def modify(new_login, instances_arr, instance_id):
 def save(connection, instances_arr, users_arr):
     InstancesHandler.InstancesHandler.update_db(
         connection, instances_arr)
+
     DatabaseManip.terminate_program(connection, users_arr)
 
 
 def unknown():
-    print("unknown command. Maybe use 'help <command> and check how to use it.")
+    print("unknown command. Maybe use 'commands' and check the avaiable commands.")
 
 
 def encrypt_database():
